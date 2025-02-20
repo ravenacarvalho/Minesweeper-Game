@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "minesweeper.h"
+#include <ctype.h> 
 
 #define BLUE "\033[44m   \033[0m"  
 
@@ -118,27 +119,56 @@ void abrirCelula(Celula **tabuleiro, int linhas, int colunas, int i, int j) {
 void jogar(Celula **tabuleiro, int linhas, int colunas, int num_minas) {
     char comando[10];
     int i, j;
-    
+    char tipo_comando; 
+
     while (1) {
         exibirTabuleiro(tabuleiro, linhas, colunas);
-        printf("Digite sua jogada: ");
-        scanf("%s", comando);
-        
-        if (comando[0] == '#') {
-            i = comando[1] - 'A';
-            j = atoi(&comando[2]) - 1;
-            tabuleiro[i][j].marcado = !tabuleiro[i][j].marcado;
-        } else {
-            i = comando[0] - 'A';
-            j = atoi(&comando[1]) - 1;
-            
+
+        int entrada_valida = 0;
+        while (!entrada_valida) {
+            printf("Digite sua jogada: ");
+            scanf("%s", comando);
+
+            tipo_comando = comando[0]; 
+            int offset = (tipo_comando == '#' || tipo_comando == '!') ? 1 : 0; 
+
+            if (isalpha(comando[offset])) {
+                i = toupper(comando[offset]) - 'A';
+
+                if (isdigit(comando[offset + 1])) {
+                    j = atoi(&comando[offset + 1]) - 1;
+                } else {
+                    printf("Entrada inválida! Use o formato correto (ex: A5, #B7, !C3).\n");
+                    continue;
+                }
+            } else {
+                printf("Entrada inválida! Use o formato correto (ex: A5, #B7, !C3).\n");
+                continue;
+            }
+
+            if (i >= 0 && i < linhas && j >= 0 && j < colunas) {
+                entrada_valida = 1;
+            } else {
+                printf("Coordenada fora dos limites! Tente novamente.\n");
+            }
+        }
+
+        if (tipo_comando == '#') { 
+            if (!tabuleiro[i][j].revelado) {
+                tabuleiro[i][j].marcado = 1;
+            }
+        } else if (tipo_comando == '!') {  
+            if (tabuleiro[i][j].marcado) {
+                tabuleiro[i][j].marcado = 0;
+            }
+        } else { 
             if (tabuleiro[i][j].mina) {
                 printf("Você acertou uma mina! Fim de jogo.\n");
                 return;
             }
             abrirCelula(tabuleiro, linhas, colunas, i, j);
         }
-        
+
         int celulas_reveladas = 0, total_celulas = linhas * colunas - num_minas;
         for (int x = 0; x < linhas; x++) {
             for (int y = 0; y < colunas; y++) {
