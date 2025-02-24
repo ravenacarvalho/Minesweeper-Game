@@ -6,6 +6,7 @@
 
 #define BLUE "\033[44m   \033[0m"  
 
+// Cria o tabuleiro alocando memória para as células
 Celula **criarTabuleiro(int linhas, int colunas) {
     Celula **tabuleiro = (Celula **)malloc(linhas * sizeof(Celula *));
     for (int i = 0; i < linhas; i++) {
@@ -14,6 +15,7 @@ Celula **criarTabuleiro(int linhas, int colunas) {
     return tabuleiro;
 }
 
+// Posiciona as minas de forma aleatória
 void posicionarMinas(Celula **tabuleiro, int linhas, int colunas, int num_minas) {
     int colocadas = 0;
     while (colocadas < num_minas) {
@@ -26,6 +28,7 @@ void posicionarMinas(Celula **tabuleiro, int linhas, int colunas, int num_minas)
     }
 }
 
+// Calcula o número de minas vizinhas para cada célula
 void calcularVizinhos(Celula **tabuleiro, int linhas, int colunas) {
     for (int i = 0; i < linhas; i++) {
         for (int j = 0; j < colunas; j++) {
@@ -47,7 +50,9 @@ void calcularVizinhos(Celula **tabuleiro, int linhas, int colunas) {
     }
 }
 
+// Exibe o tabuleiro com as coordenadas
 void exibirTabuleiro(Celula **tabuleiro, int linhas, int colunas) {
+    // Exibe a numeração das colunas (dezenas)
     printf("    ");
     for (int j = 0; j < colunas; j++) {
         int num = j + 1;
@@ -60,6 +65,7 @@ void exibirTabuleiro(Celula **tabuleiro, int linhas, int colunas) {
     }
     printf("\n");
 
+    // Exibe a numeração das colunas do tabuleiro
     printf("    ");
     for (int j = 0; j < colunas; j++) {
         int num = j + 1;
@@ -68,6 +74,7 @@ void exibirTabuleiro(Celula **tabuleiro, int linhas, int colunas) {
     }
     printf("\n");
 
+    // Exibe as linhas do tabuleiro
     for (int i = 0; i < linhas; i++) {
         printf("   ");
         for (int j = 0; j < colunas; j++) {
@@ -98,6 +105,7 @@ void exibirTabuleiro(Celula **tabuleiro, int linhas, int colunas) {
     printf("+\n");
 }
 
+// Abre uma célula e, se ela não possuir minas vizinhas, expande recursivamente
 void abrirCelula(Celula **tabuleiro, int linhas, int colunas, int i, int j) {
     if (i < 0 || i >= linhas || j < 0 || j >= colunas || tabuleiro[i][j].revelado)
         return;
@@ -117,6 +125,7 @@ void abrirCelula(Celula **tabuleiro, int linhas, int colunas, int i, int j) {
     }
 }
 
+// Revela todas as minas no tabuleiro (usada quando o jogador acerta uma mina)
 void revelarMinas(Celula **tabuleiro, int linhas, int colunas) {
     for (int i = 0; i < linhas; i++) {
         for (int j = 0; j < colunas; j++) {
@@ -125,6 +134,7 @@ void revelarMinas(Celula **tabuleiro, int linhas, int colunas) {
     }
 }
 
+// Função principal do jogo
 void jogar(Celula **tabuleiro, int linhas, int colunas, int num_minas) {
     char comando[10];
     int i, j;
@@ -197,6 +207,7 @@ void jogar(Celula **tabuleiro, int linhas, int colunas, int num_minas) {
     }
 }
 
+// Libera a memória alocada para o tabuleiro
 void liberarTabuleiro(Celula **tabuleiro, int linhas) {
     for (int i = 0; i < linhas; i++) {
         free(tabuleiro[i]);
