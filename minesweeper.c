@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <ctype.h>
 #include "minesweeper.h"
-#include <ctype.h> 
 
 #define BLUE "\033[44m   \033[0m"  
 
 Celula **criarTabuleiro(int linhas, int colunas) {
-    Celula **tabuleiro = (Celula **)malloc(linhas * sizeof(Celula*));
+    Celula **tabuleiro = (Celula **)malloc(linhas * sizeof(Celula *));
     for (int i = 0; i < linhas; i++) {
         tabuleiro[i] = (Celula *)calloc(colunas, sizeof(Celula));
     }
@@ -33,7 +33,8 @@ void calcularVizinhos(Celula **tabuleiro, int linhas, int colunas) {
                 int count = 0;
                 for (int di = -1; di <= 1; di++) {
                     for (int dj = -1; dj <= 1; dj++) {
-                        int ni = i + di, nj = j + dj;
+                        int ni = i + di;
+                        int nj = j + dj;
                         if (ni >= 0 && ni < linhas && nj >= 0 && nj < colunas &&
                             tabuleiro[ni][nj].mina) {
                             count++;
@@ -58,7 +59,7 @@ void exibirTabuleiro(Celula **tabuleiro, int linhas, int colunas) {
         }
     }
     printf("\n");
-    
+
     printf("    ");
     for (int j = 0; j < colunas; j++) {
         int num = j + 1;
@@ -66,14 +67,14 @@ void exibirTabuleiro(Celula **tabuleiro, int linhas, int colunas) {
         printf("  %d ", ones);
     }
     printf("\n");
-    
+
     for (int i = 0; i < linhas; i++) {
         printf("   ");
         for (int j = 0; j < colunas; j++) {
             printf("+---");
         }
         printf("+\n");
-        
+
         printf(" %c ", 'A' + i);
         for (int j = 0; j < colunas; j++) {
             if (tabuleiro[i][j].revelado) {
@@ -112,6 +113,14 @@ void abrirCelula(Celula **tabuleiro, int linhas, int colunas, int i, int j) {
                     abrirCelula(tabuleiro, linhas, colunas, ni, nj);
                 }
             }
+        }
+    }
+}
+
+void revelarMinas(Celula **tabuleiro, int linhas, int colunas) {
+    for (int i = 0; i < linhas; i++) {
+        for (int j = 0; j < colunas; j++) {
+            tabuleiro[i][j].revelado = 1;
         }
     }
 }
@@ -163,6 +172,9 @@ void jogar(Celula **tabuleiro, int linhas, int colunas, int num_minas) {
             }
         } else { 
             if (tabuleiro[i][j].mina) {
+                printf("Você acertou uma mina!\n");
+                revelarMinas(tabuleiro, linhas, colunas);
+                exibirTabuleiro(tabuleiro, linhas, colunas);
                 printf("Você acertou uma mina! Fim de jogo.\n");
                 return;
             }
@@ -178,6 +190,7 @@ void jogar(Celula **tabuleiro, int linhas, int colunas, int num_minas) {
             }
         }
         if (celulas_reveladas == total_celulas) {
+            exibirTabuleiro(tabuleiro, linhas, colunas);
             printf("Parabéns! Você venceu!\n");
             return;
         }
@@ -190,3 +203,4 @@ void liberarTabuleiro(Celula **tabuleiro, int linhas) {
     }
     free(tabuleiro);
 }
+
